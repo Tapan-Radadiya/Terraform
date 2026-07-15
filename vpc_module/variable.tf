@@ -14,12 +14,17 @@ variable "aws_vpc_instance_tenancy" {
   type        = string
 }
 
-variable "aws_vpc_private_subnet_cidr" {
-  description = "AWS vpc private subnet cidr"
+variable "aws_vpc_private_app_subnet_cidr" {
+  description = "AWS vpc app private subnet cidr"
+  type        = map(string)
+}
+
+variable "aws_vpc_private_db_subnet_cidr" {
+  description = "AWS vpc db private subnet cidr"
   type        = map(string)
 }
 
 variable "aws_vpc_public_subnet_cidr" {
-  description = "AWS vpc publi subnet cidr"
+  description = "AWS vpc public subnet cidr"
   type        = map(string)
 }
