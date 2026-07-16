@@ -28,7 +28,7 @@ variable "rds_password" {
   type        = string
 }
 
-variable "rds_instance_class" {
+variable "rds_instance_type" {
   description = "rds instace type"
   type        = string
 }

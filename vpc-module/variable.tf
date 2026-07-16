@@ -12,6 +12,7 @@ variable "aws_vpc_cidr" {
 variable "aws_vpc_instance_tenancy" {
   description = "Your vpc instance tenancy"
   type        = string
+  default     = "default"
 }
 
 variable "aws_vpc_private_app_subnet_cidr" {
