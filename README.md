@@ -1,6 +1,7 @@
-# Terraform
-Terraform
+# Terraform Infrastructure
 
+```text
+Terraform
 ├── VPC
 │   ├── Public Subnets
 │   ├── Private App Subnets
@@ -26,3 +27,4 @@ Terraform
 ├── CloudWatch
 │
 └── IAM Roles
+```
