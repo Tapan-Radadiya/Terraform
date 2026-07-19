@@ -7,35 +7,42 @@ module "orion_ec2" {
   iam_instance_profile = aws_iam_instance_profile.orion_ec2_instance_profile.name
 }
 
-
-# Trust Policy
-data "aws_iam_policy_document" "orion_ec2_policy" {
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "sts:AssumeRole"
-    ]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
-}
-
 # Create Role
 resource "aws_iam_role" "orion_ec2_role" {
   name               = "orion_ec2_role"
   assume_role_policy = data.aws_iam_policy_document.orion_ec2_policy.json
 }
 
-# Attach policies for the role
-resource "aws_iam_role_policy_attachment" "test" {
-  role       = aws_iam_role.orion_ec2_role.name
-  policy_arn = ""
+# S3 Policy
+data "aws_iam_policy_document" "orion_s3_policy_data" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:PutObject",
+      "s3:DeleteObject"
+    ]
+
+    resources = [
+      module.s3.arn
+    ]
+  }
 }
 
+
+# IAM policy for S3
+resource "aws_iam_policy" "orion_s3_policy" {
+  name   = "orion-s3-policy"
+  policy = data.aws_iam_policy_document.orion_s3_policy_data.json
+}
+
+# Attach policies for the role
+resource "aws_iam_role_policy_attachment" "orion_s3_attachement" {
+  role       = aws_iam_role.orion_ec2_role.name
+  policy_arn = aws_iam_policy.orion_s3_policy.arn
+}
+
+# Create Instance profile
 resource "aws_iam_instance_profile" "orion_ec2_instance_profile" {
   role = aws_iam_role.orion_ec2_role.name
 }
