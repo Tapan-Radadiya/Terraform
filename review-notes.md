@@ -16,8 +16,18 @@ terraform fmt -recursive
 `validate` catches syntax and reference errors without touching AWS. Run it after
 every edit. Several items below would have shown up instantly.
 
-Note: `validate` only checks syntax and types. `terraform plan` (which calls AWS)
-will surface a second wave of issues that validate cannot see. That's normal.
+**Green validate does NOT mean correct.** Three separate layers:
+
+1. **`validate`** — syntax, types, references, argument *names*. No AWS contact.
+2. **`plan`** — talks to AWS. Catches bad AMI IDs, invalid engine versions, and
+   illegal argument *combinations* (e.g. the NAT gateway mode mismatch below).
+3. **`apply`** — only AWS knows at creation time. The ALB underscore-name dies here.
+
+**It also only checks modules reachable from the root.** Check
+`.terraform/modules/modules.json` — as of 2026-07-20 only `vpc`, `orion_ec2`,
+`orion_rds_postgres`, `orion-s3-bucket` are listed. `alb-module`, `asg-module`, and
+`route-table-module` are **entirely unvalidated** because no root `module` block
+calls them. Expect new errors the moment they get wired up.
 
 ---
 
@@ -86,14 +96,28 @@ pub  1a  10.1.3.0/24     pub  1b  10.1.33.0/24
 While learning: make every subnet a `/24`. Third octet becomes the subnet ID, no
 boundary math. 256 addresses each, 251 usable (AWS reserves 5 per subnet).
 
-### NAT gateway is wrong
-`vpc-module/aws_vpc_module.tf:59` passes `vpc_id`, which is not an argument on
-`aws_nat_gateway`. It needs:
-- `subnet_id` — must be a **public** subnet
-- `allocation_id` — from an `aws_eip`
+### NAT gateway — mixes two modes  (corrected 2026-07-20)
 
-*Why:* it lives in public space so it can reach the internet; private subnets
-route outbound traffic **through** it.
+**Earlier note in this file was wrong.** It claimed `vpc_id` is not a valid argument
+on `aws_nat_gateway`. It is — AWS provider v6 supports two modes:
+
+| Mode | `availability_mode` | Needs | `allocation_id` |
+|---|---|---|---|
+| **Zonal** (the default) | `"zonal"` | `subnet_id` | required for public |
+| **Regional** | `"regional"` | `vpc_id` | **prohibited** |
+
+Current config sets `vpc_id` but leaves `availability_mode` unset, so it defaults to
+`zonal` — which wants `subnet_id`. One argument from each mode. Fails at **apply**,
+not validate, since both argument names are legitimately in the schema.
+
+Pick one:
+- **Zonal** — add `subnet_id` (a **public** subnet) + `aws_eip` for `allocation_id`.
+  Traditional; one per AZ for real HA. Teaches more about how NAT works.
+- **Regional** — keep `vpc_id`, add `availability_mode = "regional"`, no EIP.
+  Newer, less code, AWS handles AZ spread.
+
+*Why NAT sits in public space:* it needs to reach the internet itself, so private
+subnets route outbound traffic **through** it.
 
 ### Route tables do nothing yet
 The module creates a table with no routes and no associations — an empty container.

@@ -2,7 +2,7 @@ module "orion_ec2" {
   source               = "./ec2-module"
   instace_ami_id       = "ami-0b910d1016287a5e7" // Amazon Linux
   instace_type         = "t2.micro"
-  security_groups      = [module.aws_vpc_module.orion_security_group]
+  security_groups      = [module.vpc.vpc_security_group_id]
   instance_market_type = "spot"
   iam_instance_profile = aws_iam_instance_profile.orion_ec2_instance_profile.name
 }
@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "orion_s3_policy_data" {
     ]
 
     resources = [
-      module.s3.arn
+      module.orion-s3-bucket.s3_bucket_arn
     ]
   }
 }

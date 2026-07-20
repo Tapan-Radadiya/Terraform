@@ -20,7 +20,7 @@ resource "aws_subnet" "orion_app_private_subnet" {
   }
 }
 
-resource "aws_subnet" "orion_app_db_subnet" {
+resource "aws_subnet" "orion_db_private_subnet" {
   for_each          = var.aws_vpc_private_db_subnet_cidr
   vpc_id            = aws_vpc.orion_vpc.id
   depends_on        = [aws_vpc.orion_vpc]
@@ -55,9 +55,8 @@ resource "aws_internet_gateway" "orion_internet_gateway" {
 
 
 resource "aws_nat_gateway" "orion_nat_gateway" {
-  vpc_id = aws_vpc.orion_vpc.id
-
-
+  vpc_id            = aws_vpc.orion_vpc.id
+  availability_mode = "regional"
   tags = {
     Environment = "${var.aws_vpc_environment}_orion_NG"
   }

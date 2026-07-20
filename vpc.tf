@@ -20,6 +20,6 @@ module "vpc" {
 }
 
 resource "aws_route_table" "orion_route_table" {
-  vpc_id = module.aws_vpc_module.id
+  vpc_id = module.vpc.vpc_module_id
   route  = []
 }
