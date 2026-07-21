@@ -29,3 +29,9 @@ variable "aws_vpc_public_subnet_cidr" {
   description = "AWS vpc public subnet cidr"
   type        = map(string)
 }
+
+variable "aws_nat_gateway_availability_mode" {
+  description = "AWS NAT gateway availability mode"
+  type        = string
+  default     = "region"
+}

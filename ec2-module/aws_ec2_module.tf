@@ -4,6 +4,8 @@ resource "aws_instance" "orion_vpc_module" {
   security_groups      = var.security_groups
   iam_instance_profile = var.iam_instance_profile
 
+  subnet_id = var.instance_subnet_id
+
   root_block_device {
     volume_size = var.block_size
   }

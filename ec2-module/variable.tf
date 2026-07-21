@@ -30,3 +30,9 @@ variable "instance_market_type" {
   type        = string
   default     = null // Default to on-demand
 }
+
+
+variable "instance_subnet_id" {
+  description = "Instance subnet ID"
+  type        = string
+}

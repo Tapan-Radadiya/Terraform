@@ -5,6 +5,7 @@ module "orion_ec2" {
   security_groups      = [module.vpc.vpc_security_group_id]
   instance_market_type = "spot"
   iam_instance_profile = aws_iam_instance_profile.orion_ec2_instance_profile.name
+  instance_subnet_id   = module.vpc.vpc_app_private_subnet_id
 }
 
 # Create Role
@@ -45,4 +46,12 @@ resource "aws_iam_role_policy_attachment" "orion_s3_attachement" {
 # Create Instance profile
 resource "aws_iam_instance_profile" "orion_ec2_instance_profile" {
   role = aws_iam_role.orion_ec2_role.name
+}
+
+
+# ALB
+module "orion_load_balancer" {
+  source                 = "./alb-module"
+  aws_load_balancer_type = "Application"
+  environment            = "dev"
 }

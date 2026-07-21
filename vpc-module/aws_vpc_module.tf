@@ -56,7 +56,7 @@ resource "aws_internet_gateway" "orion_internet_gateway" {
 
 resource "aws_nat_gateway" "orion_nat_gateway" {
   vpc_id            = aws_vpc.orion_vpc.id
-  availability_mode = "regional"
+  availability_mode = var.aws_nat_gateway_availability_mode
   tags = {
     Environment = "${var.aws_vpc_environment}_orion_NG"
   }

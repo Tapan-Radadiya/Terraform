@@ -7,4 +7,9 @@ module "orion_rds_postgres" {
   rds_instance_type     = "db.t3.micro"
   rds_password          = "admin"
   rds_username          = "orion_root_user"
+  rds_subnet_group_name = aws_db_subnet_group.rds_db_subnet_group_name.name
+}
+resource "aws_db_subnet_group" "rds_db_subnet_group_name" {
+  name       = "orion-rds-subnet-1"
+  subnet_ids = [module.vpc.vpc_db_private_subnet_id]
 }
