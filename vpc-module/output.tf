@@ -2,6 +2,10 @@ output "vpc_module_id" {
   value = aws_vpc.orion_vpc.id
 }
 
+output "vpc_cidr_range" {
+  value = aws_vpc.orion_vpc.cidr_block
+}
+
 output "vpc_security_group_id" {
   value = aws_security_group.orion_security_group.id
 }
@@ -12,9 +16,21 @@ output "vpc_app_private_subnet_id" {
   }
 }
 
+output "vpc_app_private_subnet_cidr" {
+  value = {
+    for key, subnet in aws_aws_subnet.orion_app_private_subnet : key => subnet.cidr
+  }
+}
+
 output "vpc_db_private_subnet_id" {
   value = {
     for key, subnet in aws_subnet.orion_db_private_subnet : key => subnet.id
+  }
+}
+
+output "vpc_db_private_subnet_cidr" {
+  value = {
+    for key, subnet in aws_subnet.orion_db_private_subnet : key => subnet.cidr
   }
 }
 

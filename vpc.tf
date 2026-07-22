@@ -21,5 +21,34 @@ module "vpc" {
 
 resource "aws_route_table" "orion_route_table" {
   vpc_id = module.vpc.vpc_module_id
-  route  = []
+
+  # Adopt the route (This will be created by AWS by default)
+  route {
+    cidr_block = module.vpc.vpc_cidr_range
+    gateway_id = "local"
+  }
+
+  # Internet Gateway
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = module.vpc.internet_gateway_id
+  }
+}
+
+resource "aws_route_table_association" "orion_RT_association" {
+  route_table_id = aws_route_table.orion_route_table.id
+  subnet_id      = module.vpc.vpc_public_subnet_id
+}
+
+
+resource "aws_route_table" "orion_private_app_rt" {
+  vpc_id = module.vpc.vpc_module_id
+
+  # Adopt the route (This will be created by AWS by default)
+  route {
+    cidr_block = module.vpc.vpc_cidr_range
+    gateway_id = "local"
+  }
+
+  # Create Route table for private app and db
 }
