@@ -7,3 +7,8 @@ variable "environment" {
   description = "Environment"
   type        = string
 }
+
+variable "lb_subnets" {
+  description = "Load balancer subnets"
+  type        = list(string)
+}

@@ -50,5 +50,15 @@ resource "aws_route_table" "orion_private_app_rt" {
     gateway_id = "local"
   }
 
-  # Create Route table for private app and db
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = module.vpc.nat_gateway_id
+  }
+}
+
+resource "aws_route_table_association" "orion_private_app_RT_association" {
+  for_each = module.vpc.vpc_db_private_subnet_cidr
+
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.orion_private_app_rt.id
 }

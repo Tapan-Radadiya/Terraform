@@ -18,7 +18,7 @@ output "vpc_app_private_subnet_id" {
 
 output "vpc_app_private_subnet_cidr" {
   value = {
-    for key, subnet in aws_aws_subnet.orion_app_private_subnet : key => subnet.cidr
+    for key, subnet in aws_subnet.orion_app_private_subnet : key => subnet.cidr
   }
 }
 
